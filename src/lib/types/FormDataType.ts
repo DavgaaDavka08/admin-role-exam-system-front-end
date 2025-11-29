@@ -9,3 +9,6 @@ export type FormErrorType = {
   password: string;
   confirmPassword: string;
 };
+export type ApiErrorResponse = {
+  message?: string;
+};
