@@ -26,6 +26,7 @@ const register = async () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
+      <Input type="text" />
       <Button onClick={addHandler}>add</Button>
     </div>
   );
