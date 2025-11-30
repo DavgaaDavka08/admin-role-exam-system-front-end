@@ -53,7 +53,7 @@ export default function LoginForm() {
       if (decoded.role === "admin") {
         router.push("/admin");
       } else {
-        router.push("/user");
+        router.push("/");
       }
     } catch (error: any) {
       console.log(error);

@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { registerUser } from "@/lib/auth/register";
 import { ApiErrorResponse } from "@/lib/types/FormDataType";
 import { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
+
 import React, { useState } from "react";
 import { toast } from "sonner";
 
@@ -19,6 +21,7 @@ type FormErrorType = {
   confirmPassword: string;
 };
 const Register = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState<FormDataType>({
     email: "",
     password: "",
@@ -61,7 +64,11 @@ const Register = () => {
     try {
       const data = await registerUser(formData.email, formData.password);
       console.log("data :>> ", data);
-      toast.success("Амжилттай бүртгэгдлээ!");
+
+      if (data.success === true) {
+        router.push("/login");
+        toast.success("Амжилттай бүртгэгдлээ!");
+      }
     } catch (error) {
       const err = error as AxiosError<ApiErrorResponse>;
       const message = err.response?.data?.message || "Серверт алдаа гарлаа";
