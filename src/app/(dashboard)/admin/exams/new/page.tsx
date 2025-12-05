@@ -1,37 +1,31 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 
-import { Plus, Trash2, ArrowLeft, Save } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { AdminSidebar } from "@/app/components/admin-sidebar";
-import { ThemeToggle } from "@/app/components/theme-toggle";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Plus, Trash2, ArrowLeft, Save } from "lucide-react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { AdminSidebar } from "@/app/components/admin-sidebar"
+import { ThemeToggle } from "@/app/components/theme-toggle"
 
 type Question = {
-  id: string;
-  question: string;
-  options: { id: string; text: string }[];
-  correctAnswer: string;
-};
+  id: string
+  question: string
+  options: { id: string; text: string }[]
+  correctAnswer: string
+}
 
 export default function NewExamPage() {
-  const router = useRouter();
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [duration, setDuration] = useState("60");
+  const router = useRouter()
+  const [title, setTitle] = useState("")
+  const [description, setDescription] = useState("")
+  const [duration, setDuration] = useState("60")
   const [questions, setQuestions] = useState<Question[]>([
     {
       id: "1",
@@ -44,7 +38,7 @@ export default function NewExamPage() {
       ],
       correctAnswer: "A",
     },
-  ]);
+  ])
 
   const addQuestion = () => {
     setQuestions([
@@ -60,18 +54,16 @@ export default function NewExamPage() {
         ],
         correctAnswer: "A",
       },
-    ]);
-  };
+    ])
+  }
 
   const removeQuestion = (id: string) => {
-    setQuestions(questions.filter((q) => q.id !== id));
-  };
+    setQuestions(questions.filter((q) => q.id !== id))
+  }
 
   const updateQuestion = (id: string, field: string, value: string) => {
-    setQuestions(
-      questions.map((q) => (q.id === id ? { ...q, [field]: value } : q))
-    );
-  };
+    setQuestions(questions.map((q) => (q.id === id ? { ...q, [field]: value } : q)))
+  }
 
   const updateOption = (questionId: string, optionId: string, text: string) => {
     setQuestions(
@@ -79,18 +71,17 @@ export default function NewExamPage() {
         q.id === questionId
           ? {
               ...q,
-              options: q.options.map((opt) =>
-                opt.id === optionId ? { ...opt, text } : opt
-              ),
+              options: q.options.map((opt) => (opt.id === optionId ? { ...opt, text } : opt)),
             }
-          : q
-      )
-    );
-  };
+          : q,
+      ),
+    )
+  }
 
   const handleSave = () => {
-    router.push("/admin/exams");
-  };
+    // Save logic here
+    router.push("/admin/exams")
+  }
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -107,9 +98,7 @@ export default function NewExamPage() {
               </Button>
               <div>
                 <h1 className="text-2xl font-bold">Шинэ шалгалт үүсгэх</h1>
-                <p className="text-sm text-muted-foreground">
-                  Асуулт нэмж шалгалт бэлдэх
-                </p>
+                <p className="text-sm text-muted-foreground">Асуулт нэмж шалгалт бэлдэх</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -168,9 +157,7 @@ export default function NewExamPage() {
           </Card>
 
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold">
-              Асуултууд ({questions.length})
-            </h2>
+            <h2 className="text-xl font-bold">Асуултууд ({questions.length})</h2>
             <Button onClick={addQuestion}>
               <Plus className="mr-2 h-4 w-4" />
               Асуулт нэмэх
@@ -200,9 +187,7 @@ export default function NewExamPage() {
                   <Textarea
                     placeholder="Асуултаа оруулна уу"
                     value={question.question}
-                    onChange={(e) =>
-                      updateQuestion(question.id, "question", e.target.value)
-                    }
+                    onChange={(e) => updateQuestion(question.id, "question", e.target.value)}
                     rows={2}
                   />
                 </div>
@@ -211,20 +196,12 @@ export default function NewExamPage() {
                   <Label>Хариултууд</Label>
                   <RadioGroup
                     value={question.correctAnswer}
-                    onValueChange={(value) =>
-                      updateQuestion(question.id, "correctAnswer", value)
-                    }
+                    onValueChange={(value) => updateQuestion(question.id, "correctAnswer", value)}
                   >
                     {question.options.map((option) => (
                       <div key={option.id} className="flex items-center gap-3">
-                        <RadioGroupItem
-                          value={option.id}
-                          id={`${question.id}-${option.id}`}
-                        />
-                        <Label
-                          htmlFor={`${question.id}-${option.id}`}
-                          className="sr-only"
-                        >
+                        <RadioGroupItem value={option.id} id={`${question.id}-${option.id}`} />
+                        <Label htmlFor={`${question.id}-${option.id}`} className="sr-only">
                           Зөв хариулт {option.id}
                         </Label>
                         <div className="flex flex-1 items-center gap-2">
@@ -234,21 +211,13 @@ export default function NewExamPage() {
                           <Input
                             placeholder={`Хариулт ${option.id}`}
                             value={option.text}
-                            onChange={(e) =>
-                              updateOption(
-                                question.id,
-                                option.id,
-                                e.target.value
-                              )
-                            }
+                            onChange={(e) => updateOption(question.id, option.id, e.target.value)}
                           />
                         </div>
                       </div>
                     ))}
                   </RadioGroup>
-                  <p className="text-xs text-muted-foreground">
-                    Зөв хариултыг сонгоно уу
-                  </p>
+                  <p className="text-xs text-muted-foreground">Зөв хариултыг сонгоно уу</p>
                 </div>
               </CardContent>
             </Card>
@@ -266,5 +235,5 @@ export default function NewExamPage() {
         </div>
       </main>
     </div>
-  );
+  )
 }

@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, AlertCircle } from "lucide-react";
@@ -22,6 +22,7 @@ import { Logo } from "@/app/components/logo";
 import { loginUser } from "@/lib/auth/login";
 import { toast } from "sonner";
 import jwtDecode from "jwt-decode";
+import { Label } from "@/components/ui/label";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -56,6 +57,7 @@ export default function LoginForm() {
 
     if (errors.email || errors.password) {
       setFormDataError(errors);
+      setLoading(false);
       return;
     }
 
@@ -64,14 +66,16 @@ export default function LoginForm() {
 
       localStorage.setItem("token", res.token);
 
-      toast.success("Амжилттай нэвтэрлээ!");
 
       const decoded: any = jwtDecode(res.token);
 
+      localStorage.setItem("name", decoded.name);
+
+      toast.success("Амжилттай нэвтэрлээ!");
       if (decoded.role === "admin") {
         router.push("/admin");
       } else {
-        router.push("/");
+        router.push("/student");
       }
     } catch (error: any) {
       console.log(error);
@@ -129,6 +133,9 @@ export default function LoginForm() {
                   required
                   className="h-11"
                 />
+                {formDataError.email && (
+                  <p className="text-sm text-destructive">{formDataError.email}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -164,6 +171,9 @@ export default function LoginForm() {
                     )}
                   </button>
                 </div>
+                {formDataError.password && (
+                  <p className="text-sm text-destructive">{formDataError.password}</p>
+                )}
               </div>
 
               <Button type="submit" className="h-11 w-full" disabled={loading}>

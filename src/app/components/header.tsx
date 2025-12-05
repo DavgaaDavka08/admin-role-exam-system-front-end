@@ -3,6 +3,7 @@ import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { LogOut, User } from "lucide-react";
 
 const Header = () => {
   return (
@@ -18,6 +19,17 @@ const Header = () => {
             <Button asChild>
               <Link href="/register">Бүртгүүлэх</Link>
             </Button>
+
+     
+            <Button variant="ghost" size="icon">
+              <User className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/student/login">
+                <LogOut className="h-4 w-4" />
+              </Link>
+            </Button>
+       
           </div>
         </div>
       </header>

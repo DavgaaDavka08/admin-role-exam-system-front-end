@@ -72,7 +72,7 @@ export default function AdminPage() {
             </div>
             <div className="flex items-center gap-2">
               <Button asChild>
-                <Link href="/exams/new">
+                <Link href="/admin/exams/new">
                   <Plus className="mr-2 h-4 w-4" />
                   Шинэ шалгалт
                 </Link>
