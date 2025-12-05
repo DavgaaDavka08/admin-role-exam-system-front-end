@@ -1,16 +1,33 @@
 "use client";
 
+import type React from "react";
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { loginUser } from "@/lib/auth/login";
-import React, { useState } from "react";
-import { toast } from "sonner";
+import { Label } from "@/components/ui/label";
+
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Eye, EyeOff, AlertCircle } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Logo } from "@/app/components/logo";
+import { loginUser } from "@/lib/auth/login";
+import { toast } from "sonner";
 import jwtDecode from "jwt-decode";
 
 export default function LoginForm() {
   const router = useRouter();
-
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -30,7 +47,8 @@ export default function LoginForm() {
 
   const nexthandler = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    setError("");
+    setLoading(true);
     const errors = { email: "", password: "" };
 
     if (!formData.email) errors.email = "И-мэйлээ оруулна уу";
@@ -75,31 +93,105 @@ export default function LoginForm() {
   };
 
   return (
-    <form onSubmit={nexthandler} className="space-y-3">
-      <div>
-        <Input
-          placeholder="Email"
-          name="email"
-          onChange={handleChange}
-          value={formData.email}
-        />
-        <p className="text-red-600">{formDataError.email}</p>
-      </div>
+    <div className="flex min-h-screen items-center justify-center bg-background p-4">
+      <div className="w-full max-w-md space-y-6">
+        <div className="flex justify-center">
+          <Logo />
+        </div>
 
-      <div>
-        <Input
-          type="password"
-          placeholder="Password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-        />
-        <p className="text-red-600">{formDataError.password}</p>
-      </div>
+        <Card className="border-2">
+          <CardHeader className="space-y-1 text-center">
+            <CardTitle className="text-2xl font-bold">
+              Сурагчаар нэвтрэх
+            </CardTitle>
+            <CardDescription>
+              И-мэйл хаяг болон нууц үгээ оруулна уу
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={nexthandler} className="space-y-4">
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
 
-      <Button type="submit" className="w-full">
-        Нэвтрэх
-      </Button>
-    </form>
+              <div className="space-y-2">
+                <Label htmlFor="email">И-мэйл хаяг</Label>
+                <Input
+                  name="email"
+                  id="email"
+                  type="email"
+                  placeholder="example@email.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="h-11"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">Нууц үг</Label>
+                  <Link
+                    href="/student/forgot-password"
+                    className="text-sm text-muted-foreground hover:text-primary"
+                  >
+                    Нууц үг мартсан?
+                  </Link>
+                </div>
+                <div className="relative">
+                  <Input
+                    name="password"
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    className="h-11 pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <Button type="submit" className="h-11 w-full" disabled={loading}>
+                {loading ? "Нэвтэрч байна..." : "Нэвтрэх"}
+              </Button>
+
+              <div className="text-center text-sm text-muted-foreground">
+                Бүртгэлгүй юу?{" "}
+                <Link
+                  href="/register"
+                  className="font-medium text-primary hover:underline"
+                >
+                  Бүртгүүлэх
+                </Link>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+
+        <div className="text-center">
+          <Link
+            href="/"
+            className="text-sm text-muted-foreground hover:text-primary"
+          >
+            Нүүр хуудас руу буцах
+          </Link>
+        </div>
+      </div>
+    </div>
   );
 }
