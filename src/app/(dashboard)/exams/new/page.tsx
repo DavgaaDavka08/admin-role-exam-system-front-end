@@ -12,11 +12,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { AdminSidebar } from "@/components/admin-sidebar";
-import { ThemeToggle } from "@/components/theme-toggle";
+
 import { Plus, Trash2, ArrowLeft, Save } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { AdminSidebar } from "@/app/components/admin-sidebar";
+import { ThemeToggle } from "@/app/components/theme-toggle";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 type Question = {
@@ -88,7 +89,6 @@ export default function NewExamPage() {
   };
 
   const handleSave = () => {
-    // Save logic here
     router.push("/admin/exams");
   };
 

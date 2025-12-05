@@ -17,8 +17,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { AdminSidebar } from "@/app/components/admin-sidebar";
+
 import { ThemeToggle } from "@/app/components/theme-toggle";
+import { AdminSidebar } from "@/app/components/admin-sidebar";
 const stats = [
   {
     label: "Нийт шалгалт",
@@ -71,7 +72,7 @@ export default function AdminPage() {
             </div>
             <div className="flex items-center gap-2">
               <Button asChild>
-                <Link href="/admin/exams/new">
+                <Link href="/exams/new">
                   <Plus className="mr-2 h-4 w-4" />
                   Шинэ шалгалт
                 </Link>
