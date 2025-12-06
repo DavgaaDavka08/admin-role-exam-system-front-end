@@ -169,7 +169,7 @@ export default function AdminPage() {
           </Card>
         </div>
         <Button asChild variant="secondary">
-          <Link href={`/admin/exams/${id}/analytics`}>Анализ харах</Link>
+          <Link href={`/admin/exams/${id}/analytics`}>Анализ gogo харах</Link>
         </Button>
       </main>
     </div>
