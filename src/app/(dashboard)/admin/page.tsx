@@ -1,7 +1,7 @@
 "use client";
 
 import { verifyRole } from "@/lib/auth/verifyRole";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -50,6 +50,7 @@ const stats = [
 ];
 
 export default function AdminPage() {
+  const { id } = useParams();
   const router = useRouter();
 
   useEffect(() => {
@@ -167,6 +168,9 @@ export default function AdminPage() {
             </CardContent>
           </Card>
         </div>
+        <Button asChild variant="secondary">
+          <Link href={`/admin/exams/${id}/analytics`}>Анализ харах</Link>
+        </Button>
       </main>
     </div>
   );

@@ -1,15 +1,8 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+
 
 import { ArrowRight, Users, FileText, BarChart3 } from "lucide-react";
 import Link from "next/link";
-import { Logo } from "./components/logo";
-import { ThemeToggle } from "./components/theme-toggle";
 
 export default function HomePage() {
   return (

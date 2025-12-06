@@ -62,7 +62,7 @@ export default function LoginForm() {
     }
 
     try {
-      const res = await loginUser(formData.email, formData.password);
+      const res = await loginUser(formData.email, formData.password , );
 
       localStorage.setItem("token", res.token);
 
@@ -71,6 +71,7 @@ export default function LoginForm() {
 
       localStorage.setItem("name", decoded.name);
 
+      localStorage.setItem("grade", decoded.grade);
       toast.success("Амжилттай нэвтэрлээ!");
       if (decoded.role === "admin") {
         router.push("/admin");

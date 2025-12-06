@@ -29,7 +29,8 @@ type FormDataType = {
   email: string;
   password: string;
   confirmPassword: string;
-  studentId: string;
+  grade: string;
+  
 };
 
 type FormErrorType = {
@@ -37,7 +38,7 @@ type FormErrorType = {
   email: string;
   password: string;
   confirmPassword: string;
-  studentId: string;
+  grade: string;
 };
 
 export default function Register() {
@@ -51,7 +52,7 @@ export default function Register() {
     email: "",
     password: "",
     confirmPassword: "",
-    studentId: "",
+    grade: "",
   });
 
   const [formErrors, setFormErrors] = useState<FormErrorType>({
@@ -59,7 +60,7 @@ export default function Register() {
     email: "",
     password: "",
     confirmPassword: "",
-    studentId: "",
+    grade: "",
   });
 
   // --------------- Handle Change ----------------
@@ -79,7 +80,7 @@ export default function Register() {
       email: "",
       password: "",
       confirmPassword: "",
-      studentId: "",
+      grade: "",
     };
 
     // ------------ VALIDATION --------------
@@ -111,7 +112,8 @@ export default function Register() {
       const data = await registerUser(
         formData.name,
         formData.email,
-        formData.password
+        formData.password, 
+        formData.grade
       );
 
       if (data.success) {
@@ -156,6 +158,18 @@ export default function Register() {
                   className="h-11"
                 />
                 <p className="text-red-600 text-sm">{formErrors.name}</p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="grade">Анги</Label>
+                <Input
+                  id="grade"
+                  name="grade"
+                  value={formData.grade}
+                  onChange={handleChange}
+                  placeholder="Анги"
+                  className="h-11"
+                />
+                <p className="text-red-600 text-sm">{formErrors.grade}</p>
               </div>
 
               {/* EMAIL */}
