@@ -28,7 +28,7 @@ export default function ExamAnalyticsPage() {
   useEffect(() => {
     if (!examId) return;
 
-    api.get(`/api/attempts/exam/${examId}`).then((res) => {
+    api.get(`/attempts/exam/${examId}`).then((res) => {
       setAttempts(res.data);
     });
   }, [examId]);
