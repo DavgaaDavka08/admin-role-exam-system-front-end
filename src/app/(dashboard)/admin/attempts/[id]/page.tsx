@@ -36,7 +36,7 @@ export default function AttemptDetailPage() {
               </div>
             ))
           ) : (
-            <p>Хариултын мэдээлэл алга.</p>
+            <p>Хариултын мэдээлэл алгаа.</p>
           )}
         </CardContent>
       </Card>
