@@ -173,7 +173,7 @@ export default function NewExamPage() {
                   id="description"
                   placeholder="Энэ шалгалтын тухай товч мэдээлэл"
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)} // ✔ ЗӨВ
+                  onChange={(e) => setDescription(e.target.value)} 
                   rows={3}
                 />
               </div>
@@ -185,7 +185,7 @@ export default function NewExamPage() {
                   placeholder="60"
                   type="number"
                   value={duration}
-                  onChange={(e) => setDuration(e.target.value)} // ✔ ЗӨВ
+                  onChange={(e) => setDuration(e.target.value)} 
                   className="w-32"
                 />
               </div>
@@ -220,7 +220,7 @@ export default function NewExamPage() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                {/* Асуултын текст */}
+             
                 <div className="space-y-2">
                   <Label>Асуулт</Label>
                   <Textarea
@@ -233,7 +233,6 @@ export default function NewExamPage() {
                   />
                 </div>
 
-                {/* Хариултууд */}
                 <div className="space-y-3">
                   <Label>Хариултууд</Label>
 
@@ -245,7 +244,7 @@ export default function NewExamPage() {
                   >
                     {question.options.map((option) => (
                       <div key={option.id} className="flex items-center gap-3">
-                        {/* Зөв хариулт сонгох */}
+              
                         <RadioGroupItem
                           value={option.id}
                           id={`answer-${question.id}-${option.id}`}
@@ -257,7 +256,7 @@ export default function NewExamPage() {
                           Зөв хариулт {option.id}
                         </Label>
 
-                        {/* Хариултын текст бичих */}
+                    
                         <div className="flex flex-1 items-center gap-2">
                           <span className="flex h-8 w-8 items-center justify-center rounded-md border bg-muted font-medium">
                             {option.id}

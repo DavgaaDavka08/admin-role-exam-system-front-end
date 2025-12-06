@@ -35,7 +35,7 @@ export default function ExamClientPage() {
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
   const [showTimeUpDialog, setShowTimeUpDialog] = useState(false);
 
-  // LOAD EXAM + START ATTEMPT
+
   useEffect(() => {
     api.get(`/exams/${examId}`).then((res) => {
       setExam(res.data);
@@ -49,7 +49,7 @@ export default function ExamClientPage() {
     });
   }, [examId]);
 
-  // Countdown Timer
+
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
@@ -79,7 +79,7 @@ export default function ExamClientPage() {
   const saveAnswer = async (questionId: string, optionId: string) => {
     setAnswers({ ...answers, [questionId]: optionId });
 
-    // backend save
+ 
     await api.post("/attempts/answer", {
       attemptId,
       questionId,
@@ -90,10 +90,10 @@ export default function ExamClientPage() {
   const finishExam = async () => {
     await api.post("/attempts/submit", { attemptId });
 
-    // Toast
+
     toast.success("Шалгалт амжилттай илгээгдлээ!");
 
-    // Student dashboard руу буцах
+ 
     router.push("/student");
   };
 
@@ -125,9 +125,9 @@ export default function ExamClientPage() {
         </div>
       </header>
 
-      {/* LAYOUT */}
+   
       <div className="container mx-auto flex gap-6 p-4 lg:p-6">
-        {/* Sidebar Navigation */}
+
         <aside className="hidden w-64 shrink-0 lg:block">
           <Card className="sticky top-24">
             <CardContent className="p-4">
@@ -172,7 +172,6 @@ export default function ExamClientPage() {
           </Card>
         </aside>
 
-        {/* MAIN QUESTION AREA */}
         <main className="flex-1">
           <Card className="mb-6">
             <CardContent className="p-6 lg:p-8">
@@ -220,7 +219,6 @@ export default function ExamClientPage() {
             </CardContent>
           </Card>
 
-          {/* Navigation Buttons */}
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <Button
               variant="outline"
@@ -253,7 +251,7 @@ export default function ExamClientPage() {
             )}
           </div>
 
-          {/* Mobile question navigator */}
+        
           <Card className="mt-6 lg:hidden">
             <CardContent className="p-4">
               <h3 className="mb-3 text-sm font-semibold">Асуултын дугаарууд</h3>
@@ -283,22 +281,23 @@ export default function ExamClientPage() {
         </main>
       </div>
 
-      {/* Submit Dialog */}
       <AlertDialog open={showSubmitDialog} onOpenChange={setShowSubmitDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Шалгалтыг дуусгах уу?</AlertDialogTitle>
-            <AlertDialogDescription className="space-y-2">
-              <div>
-                Та {answeredCount}/{questions.length} асуултад хариулсан байна.
-              </div>
-              {answeredCount < questions.length && (
-                <div className="flex items-center gap-2 text-destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  Хариулаагүй асуултууд автоматаар буруу тооцогдоно.
-                </div>
-              )}
-            </AlertDialogDescription>
+            <AlertDialogDescription>
+ 
+    Та {answeredCount}/{questions.length} асуултад хариулсан байна.
+
+
+  {answeredCount < questions.length && (
+    <p className="flex items-center gap-2 text-destructive mt-2">
+      <AlertCircle className="h-4 w-4" />
+      Хариулаагүй асуултууд автоматаар буруу тооцогдоно.
+    </p>
+  )}
+</AlertDialogDescription>
+
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Үргэлжлүүлэх</AlertDialogCancel>
@@ -307,13 +306,13 @@ export default function ExamClientPage() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Time Up Dialog */}
+    
       <AlertDialog open={showTimeUpDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Хугацаа дууслаа!</AlertDialogTitle>
             <AlertDialogDescription>
-              Хугацаа дууссан тул шалгалт автоматаар илгээгдлээ.
+       Хугацаа дууссан тул шалгалт автоматаар илгээгдлээ.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

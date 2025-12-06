@@ -12,8 +12,7 @@ import {
   TrendingUp,
   Clock,
   Plus,
-  MoreVertical,
-  Eye,
+
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -50,7 +49,7 @@ const stats = [
 ];
 
 export default function AdminPage() {
-  const { id } = useParams();
+ 
   const router = useRouter();
 
   useEffect(() => {
@@ -112,61 +111,6 @@ export default function AdminPage() {
             })}
           </div>
 
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Сүүлийн шалгалтууд</CardTitle>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href="/admin/exams">Бүгдийг харах</Link>
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {stats.map((stat) => (
-                  <div
-                    key={stat.label}
-                    className="flex items-center justify-between rounded-lg border border-border p-4 transition-all hover:border-primary"
-                  >
-                    <div className="flex-1">
-                      <div className="mb-1 flex items-center gap-2">
-                        <h3 className="font-medium">{stat.label}</h3>
-                        <Badge
-                          variant={
-                            stat.value === 12
-                              ? "default"
-                              : stat.value === 18
-                              ? "secondary"
-                              : "outline"
-                          }
-                        >
-                          {stat.value === 12
-                            ? "Идэвхтэй"
-                            : stat.value === 18
-                            ? "Дууссан"
-                            : "Ноорог"}
-                        </Badge>
-                      </div>
-                      <div className="flex gap-4 text-sm text-muted-foreground">
-                        <span>{stat.value} сурагч</span>
-                        <span>Дундаж: {stat.value}%</span>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/admin/exams/${stat.value}`}>
-                          <Eye className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                      <Button variant="ghost" size="icon">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </main>
     </div>

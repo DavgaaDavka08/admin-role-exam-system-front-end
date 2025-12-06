@@ -46,7 +46,7 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // ---------------- Form States ----------------
+
   const [formData, setFormData] = useState<FormDataType>({
     name: "",
     email: "",
@@ -63,15 +63,15 @@ export default function Register() {
     grade: "",
   });
 
-  // --------------- Handle Change ----------------
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setFormErrors((prev) => ({ ...prev, [name]: "" })); // Clear specific error
+    setFormErrors((prev) => ({ ...prev, [name]: "" })); 
   };
 
-  // ---------------- Submit Handler -----------------
+  
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -83,7 +83,7 @@ export default function Register() {
       grade: "",
     };
 
-    // ------------ VALIDATION --------------
+
     if (!formData.name.trim()) errors.name = "Овог нэр заавал шаардлагатай";
 
     if (!formData.email.includes("@"))
@@ -95,7 +95,6 @@ export default function Register() {
     if (formData.confirmPassword !== formData.password)
       errors.confirmPassword = "Нууц үгүүд хоорондоо таарахгүй байна";
 
-    // If ANY error exists, show it
     if (
       errors.name ||
       errors.email ||
@@ -106,7 +105,6 @@ export default function Register() {
       return;
     }
 
-    // -------- REGISTER REQUEST --------
     try {
       setLoading(true);
       const data = await registerUser(
@@ -146,7 +144,7 @@ export default function Register() {
 
           <CardContent>
             <form onSubmit={submitHandler} className="space-y-4">
-              {/* NAME */}
+   
               <div className="space-y-2">
                 <Label htmlFor="name">Овог нэр</Label>
                 <Input
@@ -172,7 +170,7 @@ export default function Register() {
                 <p className="text-red-600 text-sm">{formErrors.grade}</p>
               </div>
 
-              {/* EMAIL */}
+
               <div className="space-y-2">
                 <Label htmlFor="email">И-мэйл</Label>
                 <Input
@@ -201,7 +199,7 @@ export default function Register() {
                     className="h-11 pr-10"
                   />
 
-                  {/* Toggle */}
+            
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
@@ -213,7 +211,7 @@ export default function Register() {
                 <p className="text-red-600 text-sm">{formErrors.password}</p>
               </div>
 
-              {/* CONFIRM PASSWORD */}
+
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Нууц үг давтах</Label>
                 <Input
@@ -230,7 +228,7 @@ export default function Register() {
                 </p>
               </div>
 
-              {/* SUBMIT */}
+
               <Button type="submit" className="w-full h-11" disabled={loading}>
                 {loading ? "Бүртгэж байна..." : "Бүртгүүлэх"}
               </Button>

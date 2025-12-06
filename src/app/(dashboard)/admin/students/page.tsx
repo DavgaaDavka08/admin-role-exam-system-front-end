@@ -32,15 +32,14 @@ export default function StudentsPage() {
   const [attempts, setAttempts] = useState<Attempt[]>([]);
 
   useEffect(() => {
-    // Fetch all users
+    
 
     api.get("/users").then((res) => setUsers(res.data));
 
-    // Fetch all attempts
     api.get("/attempts").then((res) => setAttempts(res.data));
   }, []);
 
-  // Calculate exam count + average score per student
+
   const formattedData = users
     .filter((u: any) => u.role !== "admin")
     .map((user: any) => {

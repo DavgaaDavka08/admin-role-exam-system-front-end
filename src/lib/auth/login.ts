@@ -1,4 +1,4 @@
-// lib/auth/login.ts (эсвэл login page дээр)
+
 import { api } from "../axios";
 import jwtDecode from "jwt-decode";
 
