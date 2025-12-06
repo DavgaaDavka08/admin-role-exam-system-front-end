@@ -22,20 +22,31 @@ type Attempt = {
 export default function ExamAnalyticsPage() {
   const { id } = useParams();
   const examId = id as string;
-
   const [attempts, setAttempts] = useState<Attempt[]>([]);
+  const [exam, setExam] = useState<any>(null);
 
   useEffect(() => {
-    if (!examId) return;
+    if (!examId) {
+      console.warn("examId not found in route");
+      return;
+    }
 
-    api.get(`/attempts/exam/${examId}`).then((res) => {
-      setAttempts(res.data);
-    });
+    console.log("examId: ", examId);
+    api
+      .get(`/attempts/exam/${examId}`)
+      .then((res) => setAttempts(res.data))
+      .catch((err) => console.error("Analytics error:", err));
   }, [examId]);
-
+  if (!examId)
+    return <div>❌ examId undefined – route structure буруу байна.</div>;
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Шалгалтын анализ</h1>
+      <h1 className="text-2xl font-bold mb-2">
+        Шалгалтын анализ {exam && `— ${exam.title}`}
+      </h1>
+      <p className="text-sm text-muted-foreground mb-6">
+        Нийт орсон сурагч: {attempts.length}
+      </p>
 
       <Card>
         <CardContent className="p-4 overflow-x-auto">

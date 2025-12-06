@@ -16,11 +16,7 @@ const Header = () => {
             <Button asChild variant="ghost">
               <Link href="/login">Нэвтрэх</Link>
             </Button>
-            <Button asChild>
-              <Link href="/register">Бүртгүүлэх</Link>
-            </Button>
 
-     
             <Button variant="ghost" size="icon">
               <User className="h-4 w-4" />
             </Button>
@@ -29,7 +25,6 @@ const Header = () => {
                 <LogOut className="h-4 w-4" />
               </Link>
             </Button>
-       
           </div>
         </div>
       </header>

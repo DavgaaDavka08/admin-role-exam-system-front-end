@@ -21,6 +21,7 @@ import { AdminSidebar } from "@/app/components/admin-sidebar";
 import { ThemeToggle } from "@/app/components/theme-toggle";
 import { api } from "@/lib/axios";
 import { v4 as uuid } from "uuid";
+import { toast } from "sonner";
 
 type Question = {
   id: string;
@@ -91,6 +92,16 @@ export default function NewExamPage() {
   };
 
   const handleSave = async () => {
+    if (!title.trim()) {
+      toast.error("Шалгалтын нэр хоосон байна!");
+      return;
+    }
+
+    if (questions.length === 0) {
+      toast.error("Дор хаяж 1 асуулт нэмэх шаардлагатай!");
+      return;
+    }
+
     try {
       await api.post("/exams", {
         title,
@@ -98,10 +109,11 @@ export default function NewExamPage() {
         duration: Number(duration),
         questions,
       });
-
+      toast.success("Шалгалт амжилттай хадгалагдлаа");
       router.push("/admin/exams");
     } catch (err) {
-      console.error("Failed to save exam", err);
+      toast.error("Хадгалах явцад алдаа гарлаа");
+      console.error(err);
     }
   };
 

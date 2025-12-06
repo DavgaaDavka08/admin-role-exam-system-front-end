@@ -1,32 +1,93 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+"use client";
 
-import { Search, Download, Mail } from "lucide-react"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { AdminSidebar } from "@/app/components/admin-sidebar"
-import { ThemeToggle } from "@/app/components/theme-toggle"
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
-const students = [
-  { id: 1, name: "Бат Болд", email: "bat@email.com", exams: 5, avgScore: 85, lastActive: "2025-12-01" },
-  { id: 2, name: "Сарантуяа Дорж", email: "sara@email.com", exams: 4, avgScore: 92, lastActive: "2025-11-30" },
-  { id: 3, name: "Ганболд Төмөр", email: "gan@email.com", exams: 6, avgScore: 78, lastActive: "2025-12-01" },
-  { id: 4, name: "Оюунаа Цэцэг", email: "oyuna@email.com", exams: 3, avgScore: 88, lastActive: "2025-11-29" },
-  { id: 5, name: "Энхбат Мөнх", email: "enkhbat@email.com", exams: 5, avgScore: 72, lastActive: "2025-11-28" },
-]
+import { Search, Download, Mail } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { AdminSidebar } from "@/app/components/admin-sidebar";
+import { ThemeToggle } from "@/app/components/theme-toggle";
+import { api } from "@/lib/axios";
+
+interface Attempt {
+  _id: string;
+  studentId: { _id: string } | string;
+  score: number;
+  totalQuestions: number;
+  createdAt: string;
+}
+
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  grade: string;
+  role: string;
+}
 
 export default function StudentsPage() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [attempts, setAttempts] = useState<Attempt[]>([]);
+
+  useEffect(() => {
+    // Fetch all users
+
+    api.get("/users").then((res) => setUsers(res.data));
+
+    // Fetch all attempts
+    api.get("/attempts").then((res) => setAttempts(res.data));
+  }, []);
+
+  // Calculate exam count + average score per student
+  const formattedData = users
+    .filter((u: any) => u.role !== "admin")
+    .map((user: any) => {
+      const userAttempts = attempts.filter(
+        (a: any) => a.studentId?._id === user._id
+      );
+
+      const examCount = userAttempts.length;
+
+      let avg = 0;
+      if (examCount > 0) {
+        const totalScore = userAttempts.reduce(
+          (sum: number, a: any) => sum + (a.score / a.totalQuestions) * 100,
+          0
+        );
+        avg = Math.round(totalScore / examCount);
+      }
+
+      const lastAttempt = userAttempts[userAttempts.length - 1];
+
+      const lastActive = lastAttempt
+        ? new Date(lastAttempt.createdAt).toLocaleDateString()
+        : "—";
+
+      return {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        grade: user.grade,
+        exams: examCount,
+        avgScore: avg,
+        lastActive,
+      };
+    });
 
   return (
     <div className="flex min-h-screen bg-background">
       <AdminSidebar />
 
       <main className="flex-1">
-        <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
+        <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur">
           <div className="flex h-16 items-center justify-between px-6">
             <div>
               <h1 className="text-2xl font-bold">Сурагчид</h1>
-              <p className="text-sm text-muted-foreground">Бүх сурагчдын мэдээлэл</p>
+              <p className="text-sm text-muted-foreground">
+                Бүх сурагчдын мэдээлэл
+              </p>
             </div>
             <div className="flex items-center gap-2">
               <Button variant="outline">
@@ -49,9 +110,10 @@ export default function StudentsPage() {
                 <Button variant="outline">Шүүлтүүр</Button>
               </div>
             </CardHeader>
+
             <CardContent>
               <div className="space-y-3">
-                {students.map((student) => (
+                {formattedData.map((student: any) => (
                   <div
                     key={student.id}
                     className="flex items-center justify-between rounded-lg border border-border p-4 transition-all hover:border-primary"
@@ -60,14 +122,20 @@ export default function StudentsPage() {
                       <Avatar className="h-12 w-12">
                         <AvatarFallback className="bg-primary/10 text-primary font-medium">
                           {student.name
-                            .split(" ")
-                            .map((n) => n[0])
+                            ?.split(" ")
+                            .map((n: string) => n[0])
                             .join("")}
                         </AvatarFallback>
                       </Avatar>
+
                       <div>
                         <h3 className="font-medium">{student.name}</h3>
-                        <p className="text-sm text-muted-foreground">{student.email}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Анги: {student.grade}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {student.email}
+                        </p>
                       </div>
                     </div>
 
@@ -76,14 +144,19 @@ export default function StudentsPage() {
                         <div className="text-xl font-bold">{student.exams}</div>
                         <p className="text-xs text-muted-foreground">Шалгалт</p>
                       </div>
+
                       <div className="text-center">
-                        <div className="text-xl font-bold text-secondary">{student.avgScore}%</div>
+                        <div className="text-xl font-bold text-secondary">
+                          {student.avgScore}%
+                        </div>
                         <p className="text-xs text-muted-foreground">Дундаж</p>
                       </div>
+
                       <div className="text-center min-w-24">
                         <p className="text-sm">{student.lastActive}</p>
                         <p className="text-xs text-muted-foreground">Сүүлд</p>
                       </div>
+
                       <Button variant="ghost" size="icon">
                         <Mail className="h-4 w-4" />
                       </Button>
@@ -96,5 +169,5 @@ export default function StudentsPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }

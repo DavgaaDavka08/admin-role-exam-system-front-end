@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 
 import {
   LayoutDashboard,
-  FileText,
   BarChart3,
   Settings,
   LogOut,
@@ -16,9 +15,9 @@ import { Logo } from "./logo";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
-  { href: "/admin/dashboard", label: "Нүүр", icon: LayoutDashboard },
-  { href: "/admin/exams", label: "Шалгалтууд", icon: FileText },
-  { href: "/admin/analytics", label: "Статистик", icon: BarChart3 },
+  { href: "/admin", label: "Нүүр", icon: LayoutDashboard },
+
+  { href: "/admin/exams", label: "Статистик", icon: BarChart3 },
   { href: "/admin/students", label: "Сурагчид", icon: Users },
   { href: "/admin/settings", label: "Тохиргоо", icon: Settings },
 ];

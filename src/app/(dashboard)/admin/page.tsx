@@ -168,9 +168,6 @@ export default function AdminPage() {
             </CardContent>
           </Card>
         </div>
-        <Button asChild variant="secondary">
-          <Link href={`/admin/exams/${id}/analytics`}>Анализ gogo харах</Link>
-        </Button>
       </main>
     </div>
   );
