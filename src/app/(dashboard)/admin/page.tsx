@@ -6,14 +6,7 @@ import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-import {
-  FileText,
-  Users,
-  TrendingUp,
-  Clock,
-  Plus,
-
-} from "lucide-react";
+import { FileText, Users, TrendingUp, Clock, Plus } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 
@@ -27,13 +20,7 @@ const stats = [
     color: "text-blue-600",
     trend: "+3 шинэ",
   },
-  {
-    label: "Нийт сурагч",
-    value: 452,
-    icon: Users,
-    color: "text-green-600",
-    trend: "+18 энэ долоо хоногт",
-  },
+
   {
     label: "Дундаж оноо",
     value: "76%",
@@ -49,7 +36,6 @@ const stats = [
 ];
 
 export default function AdminPage() {
- 
   const router = useRouter();
 
   useEffect(() => {
@@ -110,7 +96,6 @@ export default function AdminPage() {
               );
             })}
           </div>
-
         </div>
       </main>
     </div>

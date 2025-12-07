@@ -23,7 +23,6 @@ import { toast } from "sonner";
 export default function ExamClientPage() {
   const params = useParams();
   const examId = params.id as string;
-
   const router = useRouter();
 
   const [exam, setExam] = useState<any>(null);
@@ -35,22 +34,63 @@ export default function ExamClientPage() {
   const [showSubmitDialog, setShowSubmitDialog] = useState(false);
   const [showTimeUpDialog, setShowTimeUpDialog] = useState(false);
 
+  const [loading, setLoading] = useState(true);
 
+  // ---------------------------
+  // 1) LOAD EXAM + START ATTEMPT
+  // ---------------------------
   useEffect(() => {
-    api.get(`/exams/${examId}`).then((res) => {
-      setExam(res.data);
-      setTimeLeft(res.data.duration * 60);
-    });
+    const loadExam = async () => {
+      try {
+        const studentId = localStorage.getItem("id");
 
-    const studentId = localStorage.getItem("id") || "default-student";
+        const examRes = await api.get(`/exams/${examId}`);
+        setExam(examRes.data);
+        setTimeLeft(examRes.data.duration * 60);
 
-    api.post("/attempts/start", { studentId, examId }).then((res) => {
-      setAttemptId(res.data._id);
-    });
-  }, [examId]);
+        const attemptRes = await api.post("/attempts/start", {
+          studentId,
+          examId,
+        });
 
+        // Хэрвээ өмнө өгсөн бол backend 400 буцаана → redirect
+      } catch (err: any) {
+        const msg = err.response?.data?.message;
 
+        if (msg === "Та энэ шалгалтыг аль хэдийн нэг удаа өгсөн байна!") {
+          toast.error("Та энэ шалгалтыг аль хэдийн өгсөн байна!");
+          router.push("/student");
+          return;
+        }
+
+        toast.error("Алдаа гарлаа!");
+        router.push("/student");
+        return;
+      }
+
+      try {
+        const studentId = localStorage.getItem("id");
+        const attemptRes = await api.post("/attempts/start", {
+          studentId,
+          examId,
+        });
+
+        setAttemptId(attemptRes.data._id);
+      } catch (err: any) {
+        toast.error("Attempt эхлүүлэхэд алдаа гарлаа.");
+        router.push("/student");
+      }
+
+      setLoading(false);
+    };
+
+    loadExam();
+  }, [examId, router]);
+
+  // 2) TIMER
   useEffect(() => {
+    if (!exam) return;
+
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
@@ -63,9 +103,10 @@ export default function ExamClientPage() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [exam]);
 
-  if (!exam) return <div>Loading...</div>;
+  if (loading) return <div className="p-6">Loading...</div>;
+  if (!exam) return <div className="p-6">Шалгалт олдсонгүй</div>;
 
   const questions = exam.questions;
   const q = questions[currentQuestion];
@@ -76,33 +117,36 @@ export default function ExamClientPage() {
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
+  // 3) SAVE ANSWER
   const saveAnswer = async (questionId: string, optionId: string) => {
     setAnswers({ ...answers, [questionId]: optionId });
 
- 
-    await api.post("/attempts/answer", {
-      attemptId,
-      questionId,
-      selectedOption: optionId,
-    });
+    try {
+      await api.post("/attempts/answer", {
+        attemptId,
+        questionId,
+        selectedOption: optionId,
+      });
+    } catch {
+      toast.error("Хариулт хадгалахад алдаа гарлаа.");
+    }
   };
 
   const finishExam = async () => {
-    await api.post("/attempts/submit", { attemptId });
-
-
-    toast.success("Шалгалт амжилттай илгээгдлээ!");
-
- 
-    router.push("/student");
+    try {
+      await api.post("/attempts/submit", { attemptId });
+      toast.success("Шалгалт амжилттай илгээгдлээ!");
+      router.push("/student");
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Илгээхэд алдаа гарлаа.");
+    }
   };
 
   const answeredCount = Object.keys(answers).length;
 
   return (
     <div className="min-h-screen bg-background">
-      {/* HEADER */}
-      <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
+      <header className="sticky top-0 z-50 border-b border-border bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-card/50">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div>
             <h1 className="text-lg font-bold">{exam.title}</h1>
@@ -125,9 +169,7 @@ export default function ExamClientPage() {
         </div>
       </header>
 
-   
       <div className="container mx-auto flex gap-6 p-4 lg:p-6">
-
         <aside className="hidden w-64 shrink-0 lg:block">
           <Card className="sticky top-24">
             <CardContent className="p-4">
@@ -175,11 +217,9 @@ export default function ExamClientPage() {
         <main className="flex-1">
           <Card className="mb-6">
             <CardContent className="p-6 lg:p-8">
-              <div className="mb-6 flex items-center justify-between">
-                <Badge variant="outline" className="text-sm">
-                  Асуулт {currentQuestion + 1}/{questions.length}
-                </Badge>
-              </div>
+              <Badge variant="outline" className="text-sm mb-6">
+                Асуулт {currentQuestion + 1}/{questions.length}
+              </Badge>
 
               <h2 className="mb-8 text-xl font-medium leading-relaxed lg:text-2xl">
                 {q.question}
@@ -227,57 +267,23 @@ export default function ExamClientPage() {
                 setCurrentQuestion(Math.max(0, currentQuestion - 1))
               }
               disabled={currentQuestion === 0}
-              className="w-full sm:w-auto"
             >
               Өмнөх
             </Button>
 
             {currentQuestion === questions.length - 1 ? (
-              <Button
-                size="lg"
-                onClick={() => setShowSubmitDialog(true)}
-                className="w-full sm:w-auto"
-              >
+              <Button size="lg" onClick={() => setShowSubmitDialog(true)}>
                 Шалгалт дуусгах
               </Button>
             ) : (
               <Button
                 size="lg"
                 onClick={() => setCurrentQuestion(currentQuestion + 1)}
-                className="w-full sm:w-auto"
               >
                 Дараах
               </Button>
             )}
           </div>
-
-        
-          <Card className="mt-6 lg:hidden">
-            <CardContent className="p-4">
-              <h3 className="mb-3 text-sm font-semibold">Асуултын дугаарууд</h3>
-              <div className="grid grid-cols-5 gap-2">
-                {questions.map((item: any, idx: number) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setCurrentQuestion(idx)}
-                    className={cn(
-                      "flex h-10 w-10 items-center justify-center rounded-md border-2 text-sm font-medium",
-                      currentQuestion === idx &&
-                        "border-primary bg-primary text-primary-foreground",
-                      currentQuestion !== idx &&
-                        answers[item.id] &&
-                        "border-secondary bg-secondary/20",
-                      currentQuestion !== idx &&
-                        !answers[item.id] &&
-                        "border-border"
-                    )}
-                  >
-                    {idx + 1}
-                  </button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
         </main>
       </div>
 
@@ -286,18 +292,14 @@ export default function ExamClientPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Шалгалтыг дуусгах уу?</AlertDialogTitle>
             <AlertDialogDescription>
- 
-    Та {answeredCount}/{questions.length} асуултад хариулсан байна.
-
-
-  {answeredCount < questions.length && (
-    <p className="flex items-center gap-2 text-destructive mt-2">
-      <AlertCircle className="h-4 w-4" />
-      Хариулаагүй асуултууд автоматаар буруу тооцогдоно.
-    </p>
-  )}
-</AlertDialogDescription>
-
+              Та {answeredCount}/{questions.length} асуултад хариулсан байна.
+              {answeredCount < questions.length && (
+                <p className="flex items-center gap-2 text-destructive mt-2">
+                  <AlertCircle className="h-4 w-4" />
+                  Хариулаагүй асуултууд автоматаар буруу тооцогдоно.
+                </p>
+              )}
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Үргэлжлүүлэх</AlertDialogCancel>
@@ -306,13 +308,13 @@ export default function ExamClientPage() {
         </AlertDialogContent>
       </AlertDialog>
 
-    
+      {/* TIME UP DIALOG */}
       <AlertDialog open={showTimeUpDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Хугацаа дууслаа!</AlertDialogTitle>
             <AlertDialogDescription>
-       Хугацаа дууссан тул шалгалт автоматаар илгээгдлээ.
+              Хугацаа дууссан тул шалгалт автоматаар илгээгдлээ.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

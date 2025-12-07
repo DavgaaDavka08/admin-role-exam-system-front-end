@@ -21,7 +21,7 @@ const Header = () => {
               <User className="h-4 w-4" />
             </Button>
             <Button variant="ghost" size="icon" asChild>
-              <Link href="/student/login">
+              <Link href="/login">
                 <LogOut className="h-4 w-4" />
               </Link>
             </Button>

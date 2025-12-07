@@ -18,6 +18,7 @@ type Exam = {
   title: string;
   duration: number;
   questions: { id: string; question: string }[];
+  hasAttempt: boolean;
 };
 
 export default function StudentDashboard() {
@@ -28,10 +29,14 @@ export default function StudentDashboard() {
   useEffect(() => {
     const n = localStorage.getItem("name");
     const g = localStorage.getItem("grade");
+    const studentId = localStorage.getItem("id");
+
     if (n) setName(n);
     if (g) setGrade(g);
 
-    api.get("/exams").then((res) => setExams(res.data));
+    api.get(`/exams?studentId=${studentId}`).then((res) => {
+      setExams(res.data);
+    });
   }, []);
 
   return (
@@ -39,11 +44,9 @@ export default function StudentDashboard() {
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="mb-2 text-3xl font-bold">
-            Сайн уу, {name}! {grade && `${grade}-р анги`}
+            Hi, {name}! {grade && `${grade}-р анги`}
           </h1>
-          <p className="text-muted-foreground">
-            Танд боломжтой шалгалтууд энд байна
-          </p>
+          <p className="text-muted-foreground">Амжилт </p>
         </div>
 
         <div className="grid gap-4">
@@ -58,14 +61,20 @@ export default function StudentDashboard() {
                         <Clock className="w-4 h-4" /> {exam.duration} мин
                       </span>
                       <span className="flex items-center gap-1">
-                        <FileText className="w-4 h-4" />{" "}
-                        {exam.questions.length} асуулт
+                        <FileText className="w-4 h-4" /> {exam.questions.length}{" "}
+                        асуулт
                       </span>
                     </CardDescription>
                   </div>
 
-                  <Button asChild>
-                    <Link href={`/exam/${exam._id}`}>Эхлүүлэх</Link>
+                  <Button
+                    asChild
+                    disabled={exam.hasAttempt}
+                    variant={exam.hasAttempt ? "secondary" : "default"}
+                  >
+                    <Link href={exam.hasAttempt ? "#" : `/exam/${exam._id}`}>
+                      {exam.hasAttempt ? "Өгсөн" : "Эхлүүлэх"}
+                    </Link>
                   </Button>
                 </div>
               </CardHeader>
