@@ -36,9 +36,6 @@ export default function ExamClientPage() {
 
   const [loading, setLoading] = useState(true);
 
-  // ---------------------------
-  // 1) LOAD EXAM + START ATTEMPT
-  // ---------------------------
   useEffect(() => {
     const loadExam = async () => {
       try {
@@ -52,8 +49,6 @@ export default function ExamClientPage() {
           studentId,
           examId,
         });
-
-        // Хэрвээ өмнө өгсөн бол backend 400 буцаана → redirect
       } catch (err: any) {
         const msg = err.response?.data?.message;
 
@@ -87,7 +82,6 @@ export default function ExamClientPage() {
     loadExam();
   }, [examId, router]);
 
-  // 2) TIMER
   useEffect(() => {
     if (!exam) return;
 
@@ -117,7 +111,6 @@ export default function ExamClientPage() {
     return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
   };
 
-  // 3) SAVE ANSWER
   const saveAnswer = async (questionId: string, optionId: string) => {
     setAnswers({ ...answers, [questionId]: optionId });
 

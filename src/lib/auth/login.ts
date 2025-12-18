@@ -1,4 +1,3 @@
-
 import { api } from "../axios";
 import jwtDecode from "jwt-decode";
 
@@ -16,7 +15,6 @@ export const loginUser = async (email: string, password: string) => {
   const token = res.data.token;
   const decoded = jwtDecode<JwtPayload>(token);
 
-  // 🔥 localStorage-д хадгална
   localStorage.setItem("token", token);
   localStorage.setItem("id", decoded.id);
   localStorage.setItem("name", decoded.name);
