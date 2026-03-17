@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,9 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AdminSidebar } from "@/app/components/admin-sidebar";
 import { ThemeToggle } from "@/app/components/theme-toggle";
 import { api } from "@/lib/axios";
+import { verifyRole } from "@/lib/auth/verifyRole";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface Attempt {
   _id: string;
@@ -22,44 +25,85 @@ interface Attempt {
 interface User {
   _id: string;
   name: string;
-  email: string;
   grade: string;
   role: string;
+  email?: string;
 }
 
 export default function StudentsPage() {
+  const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [attempts, setAttempts] = useState<Attempt[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
-    
+    let cancelled = false;
 
-    api.get("/users").then((res) => setUsers(res.data));
+    async function load() {
+      try {
+        setLoading(true);
 
-    api.get("/attempts").then((res) => setAttempts(res.data));
-  }, []);
+        const role = verifyRole();
+        if (role !== "admin") {
+          router.push("/login");
+          return;
+        }
 
+        const [usersRes, attemptsRes] = await Promise.all([
+          api.get("/users"),
+          api.get("/attempts"),
+        ]);
 
-  const formattedData = users
-    .filter((u: any) => u.role !== "admin")
-    .map((user: any) => {
-      const userAttempts = attempts.filter(
-        (a: any) => a.studentId?._id === user._id
+        if (cancelled) return;
+        setUsers(usersRes.data as User[]);
+        setAttempts(attemptsRes.data as Attempt[]);
+      } catch (err) {
+        console.error(err);
+        toast.error("Сурагчдын мэдээлэл татахад алдаа гарлаа");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [router]);
+
+  const formattedData = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const filteredUsers = users
+      .filter((u) => u.role !== "admin")
+      .filter((u) => {
+        if (!q) return true;
+        return (
+          u.name?.toLowerCase().includes(q) ||
+          u.grade?.toLowerCase().includes(q) ||
+          u.email?.toLowerCase().includes(q)
+        );
+      });
+
+    return filteredUsers.map((user) => {
+      const userAttempts = attempts.filter((a) =>
+        typeof a.studentId === "string"
+          ? a.studentId === user._id
+          : a.studentId?._id === user._id
       );
 
       const examCount = userAttempts.length;
-
       let avg = 0;
       if (examCount > 0) {
         const totalScore = userAttempts.reduce(
-          (sum: number, a: any) => sum + (a.score / a.totalQuestions) * 100,
+          (sum, a) => sum + (a.score / a.totalQuestions) * 100,
           0
         );
         avg = Math.round(totalScore / examCount);
       }
 
       const lastAttempt = userAttempts[userAttempts.length - 1];
-
       const lastActive = lastAttempt
         ? new Date(lastAttempt.createdAt).toLocaleDateString()
         : "—";
@@ -74,6 +118,7 @@ export default function StudentsPage() {
         lastActive,
       };
     });
+  }, [attempts, query, users]);
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -104,7 +149,12 @@ export default function StudentsPage() {
               <div className="flex items-center gap-4">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input placeholder="Сурагч хайх..." className="pl-10" />
+                  <Input
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Сурагч хайх..."
+                    className="pl-10"
+                  />
                 </div>
                 <Button variant="outline">Шүүлтүүр</Button>
               </div>
@@ -112,7 +162,16 @@ export default function StudentsPage() {
 
             <CardContent>
               <div className="space-y-3">
-                {formattedData.map((student: any) => (
+                {loading ? (
+                  <div className="text-sm text-muted-foreground">
+                    Уншиж байна...
+                  </div>
+                ) : formattedData.length === 0 ? (
+                  <div className="text-sm text-muted-foreground">
+                    Сурагч олдсонгүй.
+                  </div>
+                ) : (
+                  formattedData.map((student) => (
                   <div
                     key={student.id}
                     className="flex items-center justify-between rounded-lg border border-border p-4 transition-all hover:border-primary"
@@ -133,7 +192,7 @@ export default function StudentsPage() {
                           Анги: {student.grade}
                         </p>
                         <p className="text-sm text-muted-foreground">
-                          {student.email}
+                          {student.email ?? "—"}
                         </p>
                       </div>
                     </div>
@@ -161,7 +220,8 @@ export default function StudentsPage() {
                       </Button>
                     </div>
                   </div>
-                ))}
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
