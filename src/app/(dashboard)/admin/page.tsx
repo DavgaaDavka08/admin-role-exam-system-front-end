@@ -27,6 +27,14 @@ type Attempt = {
   createdAt: string;
 };
 
+type StatItem = {
+  label: string;
+  value: number | string;
+  icon: typeof FileText;
+  color: string;
+  trend?: string;
+};
+
 export default function AdminPage() {
   const router = useRouter();
   const [exams, setExams] = useState<Exam[]>([]);
@@ -101,7 +109,7 @@ export default function AdminPage() {
     return { totalExams, newExams, avgScore, activeExams };
   }, [attempts, exams]);
 
-  const stats = [
+  const stats: StatItem[] = [
     {
       label: "Нийт шалгалт",
       value: computed.totalExams,
@@ -121,7 +129,7 @@ export default function AdminPage() {
       icon: Clock,
       color: "text-orange-600",
     },
-  ] as const;
+  ];
 
   return (
     <div className="flex min-h-screen bg-background">
