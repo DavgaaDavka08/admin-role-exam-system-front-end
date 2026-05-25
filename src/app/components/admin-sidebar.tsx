@@ -10,14 +10,15 @@ import {
   Settings,
   LogOut,
   Users,
+  Code2,
 } from "lucide-react";
 import { Logo } from "./logo";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
   { href: "/admin", label: "Нүүр", icon: LayoutDashboard },
-
-  { href: "/admin/exams", label: "Статистик", icon: BarChart3 },
+  { href: "/admin/exams", label: "Шалгалт", icon: BarChart3 },
+  { href: "/admin/practical", label: "Практик шалгалт", icon: Code2 },
   { href: "/admin/students", label: "Сурагчид", icon: Users },
   { href: "/admin/settings", label: "Тохиргоо", icon: Settings },
 ];
@@ -34,7 +35,10 @@ export function AdminSidebar() {
       <nav className="flex-1 space-y-1 p-4">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href;
+          const isActive =
+            item.href === "/admin"
+              ? pathname === "/admin"
+              : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
           return (
             <Link
