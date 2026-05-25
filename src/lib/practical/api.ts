@@ -7,10 +7,45 @@ import type {
   PracticalTaskReview,
 } from "@/lib/types/exam";
 
+const CLOUDINARY_CLOUD = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD;
+const CLOUDINARY_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_PRESET;
+
+async function uploadDirectToCloudinary(
+  file: File,
+  kind: "image" | "archive"
+): Promise<StoredFile> {
+  // raw for archives (zip/rar/7z), image for screenshots/photos
+  const resourceType = kind === "archive" ? "raw" : "image";
+  const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/${resourceType}/upload`;
+
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("upload_preset", CLOUDINARY_PRESET as string);
+
+  const res = await fetch(url, { method: "POST", body: fd });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Cloudinary upload failed: ${text}`);
+  }
+  const data = await res.json();
+  return {
+    url: data.secure_url,
+    publicId: data.public_id,
+    originalName: file.name,
+    size: file.size,
+    mime: file.type,
+  };
+}
+
 export async function uploadFile(
   file: File,
   kind: "image" | "archive" = "image"
 ): Promise<StoredFile> {
+  // Prefer direct browser → Cloudinary upload when configured.
+  // Falls back to the backend endpoint otherwise.
+  if (CLOUDINARY_CLOUD && CLOUDINARY_PRESET) {
+    return uploadDirectToCloudinary(file, kind);
+  }
   const fd = new FormData();
   fd.append("file", file);
   const res = await api.post(`/practical/upload?kind=${kind}`, fd, {
