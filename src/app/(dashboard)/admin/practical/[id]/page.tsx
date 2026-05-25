@@ -5,6 +5,17 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
+// Cloudinary raw files require fl_attachment flag to force download.
+// Without it the browser tries to render the URL and Cloudinary returns 401.
+function toDownloadUrl(url: string): string {
+  if (!url) return url;
+  // Only modify Cloudinary raw URLs
+  if (url.includes("res.cloudinary.com") && url.includes("/raw/upload/")) {
+    return url.replace("/raw/upload/", "/raw/upload/fl_attachment/");
+  }
+  return url;
+}
+
 import { verifyRole } from "@/lib/auth/verifyRole";
 import {
   getPracticalSubmission,
@@ -423,8 +434,8 @@ export default function AdminPracticalReviewPage() {
                         </div>
                         <Button asChild size="sm" variant="outline">
                           <a
-                            href={activeSubmission.archive.url}
-                            target="_blank"
+                            href={toDownloadUrl(activeSubmission.archive.url)}
+                            download={activeSubmission.archive.originalName || "code.zip"}
                             rel="noreferrer"
                           >
                             <Download className="mr-2 h-3 w-3" />

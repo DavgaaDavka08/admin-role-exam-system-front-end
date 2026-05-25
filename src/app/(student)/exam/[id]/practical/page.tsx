@@ -1,8 +1,16 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+
+function toDownloadUrl(url: string): string {
+  if (!url) return url;
+  if (url.includes("res.cloudinary.com") && url.includes("/raw/upload/")) {
+    return url.replace("/raw/upload/", "/raw/upload/fl_attachment/");
+  }
+  return url;
+}
 import Image from "next/image";
 
 import { api } from "@/lib/axios";

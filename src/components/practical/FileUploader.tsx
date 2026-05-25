@@ -75,8 +75,12 @@ export function FileUploader({
       ) : value?.url ? (
         <div className="flex items-center justify-between rounded-md border border-border bg-muted/40 p-3 text-sm">
           <a
-            href={value.url}
-            target="_blank"
+            href={
+              kind === "archive" && value.url.includes("res.cloudinary.com")
+                ? value.url.replace("/raw/upload/", "/raw/upload/fl_attachment/")
+                : value.url
+            }
+            download={kind === "archive" ? (value.originalName || "code.zip") : undefined}
             rel="noreferrer"
             className="truncate text-primary underline"
           >
